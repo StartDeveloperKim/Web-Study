@@ -17,60 +17,40 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.WebStudy.web.entity.Notice;
+import com.WebStudy.web.service.NoticeService;
 
-@WebServlet("/notice/webstudy")
+@WebServlet("/webstudy")
 public class NoticeListController extends HttpServlet{
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		List<Notice> list = new ArrayList<>();
+		String field_ = request.getParameter("f");
+		String query_ = request.getParameter("q");
+		String page_ = request.getParameter("p");
 		
-		String driver = "oracle.jdbc.driver.OracleDriver";
-		String url = "jdbc:oracle:thin:@localhost:1521/xe";
-		String user = "C##TAEWOO";
-		String password = "0000";
-		String sql = "SELECT * FROM NOTICE";
+		String field = "title";
+		if(field_ != null && !query_.equals(""))
+			field = field_;
 		
+		String query = "";
+		if(query_ != null && !query_.equals(""))
+			query = query_;
+		
+		int page = 1;
+		if(page_ != null && !page_.equals(""))
+			page = Integer.parseInt(page_);
+		
+		NoticeService service = new NoticeService();
 		try {
-			Class.forName(driver);
-			Connection con = DriverManager.getConnection(url, user, password);
-			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery(sql);
-			
-			while(rs.next()) {
-				int id = rs.getInt("ID");
-				String title = rs.getString("TITLE");
-				String content = rs.getString("CONTENT");
-				Date regdate = rs.getDate("REGDATE");
-				String writerId = rs.getString("WRITER_ID");
-				int hit = rs.getInt("HIT");
-				String phone_num = rs.getString("PHONE_NUM");
-				String email = rs.getString("EMAIL");
-				
-				Notice n = new Notice(id, title, content, regdate, writerId, hit, phone_num, email);
-				
-				
-				list.add(n);
-			}
-			
-			/*
-			 * for(Notice n: list) { System.out.println(n.toString()); }
-			 */
-			
-			rs.close();
-			st.close();
-			con.close();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			System.out.println("클래스 오류");
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			List<Notice> list = service.getNoticeList(field, query, page);
+			request.setAttribute("list", list);
+			request.getRequestDispatcher("/WEB-INF/View/notice.jsp").forward(request, response);
+		} catch( Error e){
 			e.printStackTrace();
 		}
+		//int count = service.getNoticeCount(field, query);
 		
-		request.setAttribute("list", list);
-		request.getRequestDispatcher("/WEB-INF/View/notice.jsp").forward(request, response);
+		
 		
 	}
 }
