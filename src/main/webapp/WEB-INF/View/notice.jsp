@@ -135,13 +135,30 @@
             
             <li>
                 <div id="divPaging">
-                    <div>◀</div>
+                    <div>
+                    	<c:if test="${page-5>0 }">
+                    		<button type="button" onclick="location.href='?p=${page-5 }'">이전</button>
+                    	</c:if>
+                    	<c:if test="${page-5<=0 }">
+                    		<span onclick="alert('이전 페이지가 업습니다.')">
+                    		<button type="button">이전</button></span>
+                    	</c:if>
+                    	
+                    </div>
                        <c:forEach var="i" begin="0" end="4">
                        <c:if test="${(start+Num+i) <= lastNum}">
                        		<div><a href="?p=${i+startNum }&f=${param.f}&q=${param.q}">${i+startNum }</a></div>
                        </c:if>
                        </c:forEach>
-                    <div>▶</div>
+                    <div>
+                    	<c:if test="${startNum+4<lastNum }">
+                    		<button type="button" onclick="location.href='?p=${startNum+5 }'">다음</button>
+                    	</c:if>
+                    	<c:if test="${startNum+4>=lastNum }">
+                    		<span onclick="alert('다음 페이지가 업습니다.')">
+                    		<button type="button">다음</button></span>
+                    	</c:if>
+                    </div>
                 </div>
             </li>
 
